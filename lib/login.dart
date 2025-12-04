@@ -17,11 +17,11 @@ class LoginPage extends StatelessWidget {
 
     // Cek login pakai local storage
     final success = await AuthLocalService.login(email, password);
-  
+
     if (success) {
       Navigator.pushReplacement(
-        context, 
-        MaterialPageRoute(builder: (context) => const Beranda())
+        context,
+        MaterialPageRoute(builder: (context) => const Beranda()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -37,7 +37,7 @@ class LoginPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Color(0XFF161618),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
