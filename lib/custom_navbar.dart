@@ -34,7 +34,7 @@ class CustomNavBar extends StatelessWidget {
       context,
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => page,
-        transitionDuration: Duration.zero, // Menghilangkan animasi default agar terasa seperti tab
+        transitionDuration: Duration.zero,
       ),
     );
   }
@@ -46,7 +46,7 @@ class CustomNavBar extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: const Color(0XFF1E1E1E),
-        borderRadius: BorderRadius.circular(20), // Lebih membulat & modern
+        borderRadius: BorderRadius.circular(20), 
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.3),

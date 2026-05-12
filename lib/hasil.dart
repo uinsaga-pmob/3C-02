@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'custom_navbar.dart'; // Menggunakan Nav Bar yang sudah kita bahas sebelumnya
+import 'custom_navbar.dart';
 
 class Hasil extends StatefulWidget {
   const Hasil({super.key});
