@@ -14,9 +14,8 @@ class TaskuyApp extends StatelessWidget {
       title: 'Taskuy',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color.fromARGB(255, 38, 145, 211),
-        ),
+        brightness: Brightness.dark,
+        primaryColor: const Color(0XFF015E67),
       ),
       home: const LoginPage(),
     );

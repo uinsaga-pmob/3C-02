@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_taskuy/saya.dart';
-import 'package:flutter_application_taskuy/tambah.dart';
-import 'package:flutter_application_taskuy/tugas.dart';
-import 'beranda.dart';
-import 'notification.dart';
+import 'custom_navbar.dart'; // Menggunakan Nav Bar yang sudah kita bahas sebelumnya
 
 class Hasil extends StatefulWidget {
   const Hasil({super.key});
@@ -13,255 +9,171 @@ class Hasil extends StatefulWidget {
 }
 
 class _HasilState extends State<Hasil> {
+  bool isFinished = false; // Status checkbox sementara
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0XFF161618),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      backgroundColor: const Color(0XFF161618),
+      // Tombol Kembali di AppBar
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Color(0XFF018592)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          "Detail Tugas",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        centerTitle: true,
+      ),
+      bottomNavigationBar: const CustomNavBar(selectedIndex: 1),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            SizedBox(height: 20),
-
-            Text(
-              "Daftar",
-              textAlign: TextAlign.left,
+          children: [
+            // JUDUL HALAMAN
+            const Text(
+              "Hasil",
               style: TextStyle(
                 color: Color(0XFF018592),
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
-            SizedBox(height: 3),
-
-            Text(
+            const Text(
               "        Tugas",
-              textAlign: TextAlign.left,
               style: TextStyle(
                 color: Color(0XFF018592),
                 fontSize: 36,
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 30),
 
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0XFF1E1E1E),
-                foregroundColor: Colors.white,
-                minimumSize: Size(450, 54),
-                alignment: Alignment.centerLeft,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
-                ),
+            // KARTU DETAIL UTAMA
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: const Color(0XFF1E1E1E),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: const Color(0XFF2A2A2C), width: 1),
               ),
-              onPressed: () {},
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    "Pemrograman Mobile",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0XFF018592),
+                  // Nama Mata Kuliah sebagai Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0XFF018592).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      "Pemrograman Mobile",
+                      style: TextStyle(
+                        color: Color(0XFF018592),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    "Desain + prototype aplikasi",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    "Deadline : 20 Oktober 2025",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 16),
+                  
+                  // Judul Tugas
+                  const Text(
                     "TUGAS DESAIN APLIKASI",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      color: Color(0XFF018592),
+                      color: Colors.white,
+                      letterSpacing: 1,
                     ),
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    "Tugas kali ini membuat desain aplikasi",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
+                  const SizedBox(height: 8),
+
+                  // Info Pendukung (Jenis & Deadline)
+                  Row(
+                    children: [
+                      const Icon(Icons.category_outlined, size: 16, color: Colors.grey),
+                      const SizedBox(width: 6),
+                      const Text("Desain + Prototype", style: TextStyle(color: Colors.grey)),
+                      const SizedBox(width: 16),
+                      const Icon(Icons.timer_outlined, size: 16, color: Colors.redAccent),
+                      const SizedBox(width: 6),
+                      const Text("20 Okt 2025", style: TextStyle(color: Colors.redAccent)),
+                    ],
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    "beserta prototype-nya, sesuai arahan",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
+                  
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Divider(color: Color(0XFF2A2A2C)),
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    "dosen.",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
+
+                  // Deskripsi
+                  const Text(
+                    "Deskripsi Tugas:",
+                    style: TextStyle(color: Color(0XFF018592), fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 2),
-                  Text(
-                    "Desain harus menggambarkan tampilan",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "UI & UX dengan jelas.",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    "Kumpulkan hasilnya dalam bentuk file",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
-                    "PDF dengan format:",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 2),
-                  Text(
+                  const SizedBox(height: 10),
+                  const Text(
+                    "Tugas kali ini membuat desain aplikasi beserta prototype-nya sesuai arahan dosen. "
+                    "Desain harus menggambarkan tampilan UI & UX dengan jelas.\n\n"
+                    "Format Pengumpulan:\n"
                     "Nama_NIM_TugasDesainAplikasi.pdf",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
+                    style: TextStyle(color: Color(0XFFEDEDED), height: 1.5, fontSize: 15),
                   ),
-                  SizedBox(height: 12),
-                  Text(
-                    "Apakah tugas ini sudah selesai ?",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
+
+                  const SizedBox(height: 25),
+
+                  // Status Selesai
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: isFinished ? Colors.green.withOpacity(0.1) : Colors.white.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Checkbox(
+                          value: isFinished,
+                          activeColor: const Color(0XFF018592),
+                          onChanged: (val) {
+                            setState(() {
+                              isFinished = val!;
+                            });
+                          },
+                        ),
+                        const Text(
+                          "Tandai sebagai selesai",
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-
-            SizedBox(height: 18),
-
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0XFF1E1E1E),
-                foregroundColor: Colors.white,
-                minimumSize: Size(450, 54),
-                alignment: Alignment.centerLeft,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+            
+            const SizedBox(height: 20),
+            
+            // TOMBOL TAMBAHAN (OPSIONAL)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {},
+                icon: const Icon(Icons.edit_note_rounded),
+                label: const Text("Edit Catatan"),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Colors.grey,
+                  side: const BorderSide(color: Color(0XFF2A2A2C)),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-              ),
-              onPressed: () {},
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "Basis Data",
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0XFF018592),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Pemodelan Data",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    "Deadline : 30 Oktober 2025",
-                    style: TextStyle(fontSize: 16, color: Color(0XFFEDEDED)),
-                  ),
-                ],
-              ),
-            ),
-
-            SizedBox(height: 28),
-
-            const Spacer(),
-
-            Center(
-              child: IconButton(
-                icon: const Icon(
-                  Icons.add_circle,
-                  color: Color(0XFF018592),
-                  size: 50,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Tambah()),
-                  );
-                },
-              ),
-            ),
-
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(
-                color: Color(0XFF1E1E1E),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Beranda()),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.cottage,
-                      color: Color(0XFFEDEDED),
-                      size: 28,
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Tugas()),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.menu_book,
-                      size: 28,
-                      color: Color(0XFF018592),
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Notifikasi()),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.notifications_active,
-                      size: 28,
-                      color: Color(0XFFEDEDED),
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Saya()),
-                      );
-                    },
-                    child: const Icon(
-                      Icons.person,
-                      size: 28,
-                      color: Color(0XFFEDEDED),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
