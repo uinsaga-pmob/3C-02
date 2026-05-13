@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'custom_navbar.dart';
 import 'pengaturan.dart';
-import 'tugas.dart';
-import 'notification.dart';
-import 'saya.dart';
 
 class Beranda extends StatefulWidget {
   const Beranda({super.key});
@@ -20,11 +18,12 @@ class _BerandaState extends State<Beranda> {
     return Scaffold(
       backgroundColor: const Color(0XFF161618),
       appBar: AppBar(
-        title: const Text('TASKUY', style: TextStyle(color: Color(0XFF015E67), fontWeight: FontWeight.bold)),
+        title: const Text('TASKUY', style: TextStyle(color: Color(0XFF018592), fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Color(0XFF015E67)),
+            icon: const Icon(Icons.settings, color: Color(0XFF018592)),
             onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Pengaturan())),
           )
         ],
@@ -36,29 +35,14 @@ class _BerandaState extends State<Beranda> {
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
             calendarStyle: const CalendarStyle(
-              todayDecoration: BoxDecoration(color: Color(0XFF015E67), shape: BoxShape.circle),
+              todayDecoration: BoxDecoration(color: Color(0XFF018592), shape: BoxShape.circle),
+              defaultTextStyle: TextStyle(color: Colors.white),
             ),
           ),
           const Spacer(),
-          // Bottom Navigation Dummy
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            decoration: const BoxDecoration(
-              color: Color(0XFF1E1E1E),
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                const Icon(Icons.home, color: Color(0XFF018592), size: 30),
-                IconButton(icon: const Icon(Icons.book, color: Colors.white), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Tugas()))),
-                IconButton(icon: const Icon(Icons.notifications, color: Colors.white), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Notifikasi()))),
-                IconButton(icon: const Icon(Icons.person, color: Colors.white), onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Saya()))),
-              ],
-            ),
-          )
         ],
       ),
+      bottomNavigationBar: const CustomNavBar(selectedIndex: 0),
     );
   }
 }
