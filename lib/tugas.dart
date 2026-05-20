@@ -127,9 +127,9 @@ class _TugasState extends State<Tugas> {
             const Divider(color: Colors.white10),
 
             Text(
-              "Deadline: ${task.deadline}",
-              style: const TextStyle(color: Colors.grey, fontSize: 12),
-            ),
+              "Deadline: ${task.deadlineFormat}",
+            style: const TextStyle(color: Colors.grey, fontSize: 12),
+            )
           ],
         ),
       ),

@@ -16,7 +16,8 @@ class _TambahState extends State<Tambah> {
   final mkController = TextEditingController();
   final jtController = TextEditingController();
   final deskController = TextEditingController();
-  final dlController = TextEditingController();
+
+  DateTime? selectedDate;
 
   @override
   void initState() {
@@ -26,7 +27,7 @@ class _TambahState extends State<Tambah> {
       mkController.text = widget.task!.mataKuliah;
       jtController.text = widget.task!.jenisTugas;
       deskController.text = widget.task!.deskripsi;
-      dlController.text = widget.task!.deadline;
+      selectedDate = widget.task!.deadline;
     }
   }
 
@@ -35,15 +36,42 @@ class _TambahState extends State<Tambah> {
     mkController.dispose();
     jtController.dispose();
     deskController.dispose();
-    dlController.dispose();
     super.dispose();
+  }
+
+  Future<void> pickDate() async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2030),
+    );
+
+    if (date == null) return;
+
+    final time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (time == null) return;
+
+    setState(() {
+      selectedDate = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        time.hour,
+        time.minute,
+      );
+    });
   }
 
   Future<void> simpan() async {
     if (mkController.text.isEmpty ||
         jtController.text.isEmpty ||
         deskController.text.isEmpty ||
-        dlController.text.isEmpty) {
+        selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Semua field wajib diisi")),
       );
@@ -55,7 +83,7 @@ class _TambahState extends State<Tambah> {
       mataKuliah: mkController.text,
       jenisTugas: jtController.text,
       deskripsi: deskController.text,
-      deadline: dlController.text,
+      deadline: selectedDate!,
       selesai: widget.task?.selesai ?? false,
     );
 
@@ -65,6 +93,8 @@ class _TambahState extends State<Tambah> {
       await DBHelper.instance.updateTask(task);
     }
 
+    if (!mounted) return;
+
     Navigator.pop(context, true);
   }
 
@@ -73,50 +103,69 @@ class _TambahState extends State<Tambah> {
     return Scaffold(
       backgroundColor: const Color(0XFF161618),
       bottomNavigationBar: const CustomNavBar(selectedIndex: 1),
-
       body: SingleChildScrollView(
         padding: EdgeInsets.only(
           left: 16,
           right: 16,
-          top: 16,
+          top: 40,
           bottom: MediaQuery.of(context).viewInsets.bottom + 16,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 40),
-
             Text(
-              widget.task == null ? "Tambah\n        Tugas" : "Edit\n        Tugas",
+              widget.task == null ? "Tambah\nTugas" : "Edit\nTugas",
               style: const TextStyle(
                 color: Color(0XFF018592),
-                fontSize: 36,
+                fontSize: 34,
                 fontWeight: FontWeight.bold,
               ),
             ),
-
-            const SizedBox(height: 28),
-
+            const SizedBox(height: 30),
             _field("Mata Kuliah", mkController),
             _field("Jenis Tugas", jtController),
             _field("Deskripsi", deskController),
-            _field("Deadline", dlController),
-
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: pickDate,
+              child: Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: const Color(0XFF1E1E1E),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      selectedDate == null
+                          ? "Pilih Deadline"
+                          : "${selectedDate!.day.toString().padLeft(2, '0')}-"
+                            "${selectedDate!.month.toString().padLeft(2, '0')}-"
+                            "${selectedDate!.year} "
+                            "${selectedDate!.hour.toString().padLeft(2, '0')}:"
+                            "${selectedDate!.minute.toString().padLeft(2, '0')}",
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    const Icon(Icons.calendar_today, color: Color(0XFF018592)),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 40),
-
             Center(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0XFF018592),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 12,
+                    horizontal: 50,
+                    vertical: 14,
                   ),
                 ),
                 onPressed: simpan,
                 child: Text(
                   widget.task == null ? "Save" : "Update",
-                  style: const TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ),
@@ -128,12 +177,12 @@ class _TambahState extends State<Tambah> {
 
   Widget _field(String label, TextEditingController c) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(label, style: const TextStyle(color: Color(0XFF018592))),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           TextField(
             controller: c,
             style: const TextStyle(color: Colors.white),

@@ -21,16 +21,20 @@ class _HasilState extends State<Hasil> {
     selesai = widget.task.selesai;
   }
 
+  // =========================
+  // HAPUS TASK
+  // =========================
   Future<void> hapusTask() async {
     await DBHelper.instance.deleteTask(widget.task.id!);
+
+    if (!mounted) return;
     Navigator.pop(context, true);
   }
 
-  Future<void> updateChecklist(bool value) async {
-    setState(() {
-      selesai = value;
-    });
-
+  // =========================
+  // SIMPAN STATUS CHECKLIST
+  // =========================
+  Future<void> simpanStatus() async {
     await DBHelper.instance.updateTask(
       Task(
         id: widget.task.id,
@@ -38,9 +42,20 @@ class _HasilState extends State<Hasil> {
         jenisTugas: widget.task.jenisTugas,
         deskripsi: widget.task.deskripsi,
         deadline: widget.task.deadline,
-        selesai: value,
+        selesai: selesai,
       ),
     );
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Status tugas berhasil disimpan"),
+      ),
+    );
+
+    // 🔥 penting: balik ke beranda + refresh
+    Navigator.pop(context, true);
   }
 
   @override
@@ -49,10 +64,14 @@ class _HasilState extends State<Hasil> {
 
     return Scaffold(
       backgroundColor: const Color(0XFF161618),
+
+      // ================= APPBAR =================
       appBar: AppBar(
         backgroundColor: const Color(0XFF161618),
         iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -61,16 +80,17 @@ class _HasilState extends State<Hasil> {
             const SizedBox(height: 20),
 
             const Text(
-              "Detail\n        Tugas",
+              "Detail\nTugas",
               style: TextStyle(
                 color: Color(0XFF018592),
-                fontSize: 36,
+                fontSize: 34,
                 fontWeight: FontWeight.bold,
               ),
             ),
 
             const SizedBox(height: 30),
 
+            // ================= DETAIL CARD =================
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -84,7 +104,7 @@ class _HasilState extends State<Hasil> {
                     task.mataKuliah,
                     style: const TextStyle(
                       color: Color(0XFF018592),
-                      fontSize: 20,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -106,36 +126,64 @@ class _HasilState extends State<Hasil> {
                   const Divider(color: Colors.white10),
 
                   Text(
-                    "Deadline: ${task.deadline}",
+                    "Deadline: ${task.deadlineFormat}",
                     style: const TextStyle(color: Colors.grey),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  Text(
+                    selesai ? "Status: Selesai" : "Status: Belum selesai",
+                    style: TextStyle(
+                      color: selesai ? Colors.green : Colors.orange,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 25),
 
+            // ================= CHECKBOX =================
             CheckboxListTile(
               value: selesai,
               activeColor: const Color(0XFF018592),
               title: const Text(
-                "Tugas Selesai",
+                "Tandai tugas selesai",
                 style: TextStyle(color: Colors.white),
               ),
               onChanged: (value) {
-                if (value != null) {
-                  updateChecklist(value);
-                }
+                setState(() {
+                  selesai = value ?? false;
+                });
               },
             ),
 
             const SizedBox(height: 20),
 
+            // ================= SIMPAN =================
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange, // tetap seperti punyamu
+                  backgroundColor: const Color(0XFF018592),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: simpanStatus,
+                child: const Text("Simpan Status"),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // ================= EDIT =================
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () async {
                   final result = await Navigator.push(
@@ -145,7 +193,7 @@ class _HasilState extends State<Hasil> {
                     ),
                   );
 
-                  if (result == true) {
+                  if (result == true && mounted) {
                     Navigator.pop(context, true);
                   }
                 },
@@ -155,11 +203,13 @@ class _HasilState extends State<Hasil> {
 
             const SizedBox(height: 12),
 
+            // ================= DELETE =================
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: hapusTask,
                 child: const Text("Hapus"),
