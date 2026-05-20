@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'custom_navbar.dart';
 import 'tambah.dart';
 import 'hasil.dart';
+import '../database/db_helper.dart';
+import '../models/task.dart';
 
 class Tugas extends StatefulWidget {
   const Tugas({super.key});
@@ -11,46 +13,123 @@ class Tugas extends StatefulWidget {
 }
 
 class _TugasState extends State<Tugas> {
+  List<Task> tasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadTasks();
+  }
+
+  Future<void> loadTasks() async {
+    tasks = await DBHelper.instance.getTasks();
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0XFF161618),
       bottomNavigationBar: const CustomNavBar(selectedIndex: 1),
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0XFF018592),
-        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Tambah())),
         child: const Icon(Icons.add, color: Colors.white),
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const Tambah()),
+          );
+
+          if (result == true) loadTasks();
+        },
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 40),
-            const Text("Daftar\n        Tugas", style: TextStyle(color: Color(0XFF018592), fontSize: 36, fontWeight: FontWeight.bold)),
+
+            const Text(
+              "Daftar\n        Tugas",
+              style: TextStyle(
+                color: Color(0XFF018592),
+                fontSize: 36,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
             const SizedBox(height: 28),
-            _buildTaskItem("Pemrograman Mobile", "Desain + prototype aplikasi", "20 Okt 2025"),
-            const SizedBox(height: 16),
-            _buildTaskItem("Pemrograman Website", "HTML & CSS Dasar", "25 Okt 2025"),
+
+            tasks.isEmpty
+                ? const Center(
+                    child: Text(
+                      "Belum ada tugas",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  )
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: tasks.length,
+                      itemBuilder: (context, index) {
+                        final task = tasks[index];
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: _buildTaskItem(task),
+                        );
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildTaskItem(String title, String desc, String date) {
+  Widget _buildTaskItem(Task task) {
     return InkWell(
-      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const Hasil())),
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => Hasil(task: task)),
+        );
+
+        if (result == true) loadTasks();
+      },
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(color: const Color(0XFF1E1E1E), borderRadius: BorderRadius.circular(12)),
+        decoration: BoxDecoration(
+          color: const Color(0XFF1E1E1E),
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(color: Color(0XFF018592), fontSize: 20, fontWeight: FontWeight.bold)),
-            Text(desc, style: const TextStyle(color: Colors.white70)),
+            Text(
+              task.mataKuliah,
+              style: const TextStyle(
+                color: Color(0XFF018592),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 4),
+
+            Text(
+              task.jenisTugas,
+              style: const TextStyle(color: Colors.white70),
+            ),
+
             const Divider(color: Colors.white10),
-            Text("Deadline: $date", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+
+            Text(
+              "Deadline: ${task.deadline}",
+              style: const TextStyle(color: Colors.grey, fontSize: 12),
+            ),
           ],
         ),
       ),
