@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'login.dart';
 import 'main.dart'; 
 import 'notification.dart';
+import 'reset.dart';
 import '../database/db_helper.dart';
 
 class Pengaturan extends StatefulWidget {
@@ -136,8 +137,9 @@ class _PengaturanState extends State<Pengaturan> {
                     title: Text("Ubah Kata Sandi", style: TextStyle(color: textColor)),
                     trailing: Icon(Icons.arrow_forward_ios, color: subTextColor, size: 16),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Fitur ubah kata sandi dari pengaturan belum tersedia")),
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ResetPasswordPage()),
                       );
                     },
                   ),
