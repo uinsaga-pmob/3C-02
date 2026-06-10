@@ -2,17 +2,48 @@ import 'package:flutter/material.dart';
 import 'beranda.dart';
 import 'reset.dart';
 import 'sign_up.dart';
+import '../database/db_helper.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  Future<void> _login() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email dan Password wajib diisi")));
+      return;
+    }
+    bool isSuccess = await DBHelper.instance.loginUser(_emailController.text, _passwordController.text);
+    if (!mounted) return;
+    if (isSuccess) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Beranda()));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Email atau Password salah!"), backgroundColor: Colors.red));
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+    // --- ADAPTIF WARNA TEMA ---
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final cardColor = isDark ? const Color(0XFF1E1E1E) : Colors.white;
 
     return Scaffold(
-      backgroundColor: const Color(0XFF161618),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -20,20 +51,22 @@ class LoginPage extends StatelessWidget {
             const SizedBox(height: 60),
             Image.asset('asset/images/Taskuy.jpeg', height: 180),
             const SizedBox(height: 30),
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
-              child: Text("Log in", style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+              child: Text("Log in", style: TextStyle(color: textColor, fontSize: 32, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: emailController,
-              decoration: const InputDecoration(labelText: 'Email', filled: true, fillColor: Color(0XFF1E1E1E), border: OutlineInputBorder()),
+              controller: _emailController,
+              style: TextStyle(color: textColor),
+              decoration: InputDecoration(labelText: 'Email', filled: true, fillColor: cardColor, border: const OutlineInputBorder()),
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: passwordController,
+              controller: _passwordController,
               obscureText: true,
-              decoration: const InputDecoration(labelText: 'Kata sandi', filled: true, fillColor: Color(0XFF1E1E1E), border: OutlineInputBorder()),
+              style: TextStyle(color: textColor),
+              decoration: InputDecoration(labelText: 'Kata sandi', filled: true, fillColor: cardColor, border: const OutlineInputBorder()),
             ),
             Align(
               alignment: Alignment.centerRight,
@@ -44,21 +77,15 @@ class LoginPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                // Langsung masuk ke Beranda
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Beranda()));
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0XFF015E67),
-                minimumSize: const Size(double.infinity, 50),
-              ),
+              onPressed: _login,
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0XFF015E67), minimumSize: const Size(double.infinity, 50)),
               child: const Text("Log In", style: TextStyle(color: Colors.white)),
             ),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Belum punya akun? ", style: TextStyle(color: Colors.white)),
+                Text("Belum punya akun? ", style: TextStyle(color: textColor)),
                 GestureDetector(
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SignUpPage())),
                   child: const Text("Sign up", style: TextStyle(color: Color(0XFF018592), fontWeight: FontWeight.bold)),

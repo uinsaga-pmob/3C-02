@@ -34,33 +34,44 @@ class CustomNavBar extends StatelessWidget {
       context,
       PageRouteBuilder(
         pageBuilder: (_, __, ___) => page,
-        transitionDuration: Duration.zero, // Perpindahan instan agar terasa mulus
+        transitionDuration: Duration.zero,
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final navBgColor = isDark ? const Color(0XFF1E1E1E) : Colors.white;
+    final unselectedIconColor = isDark ? Colors.white54 : Colors.black45;
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0XFF1E1E1E),
+        color: navBgColor,
         borderRadius: BorderRadius.circular(20),
+        boxShadow: isDark ? null : [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(context, Icons.cottage_rounded, 0),
-          _buildNavItem(context, Icons.menu_book_rounded, 1),
-          _buildNavItem(context, Icons.notifications_rounded, 2),
-          _buildNavItem(context, Icons.person_rounded, 3),
+          _buildNavItem(context, Icons.cottage_rounded, 0, unselectedIconColor),
+          _buildNavItem(context, Icons.menu_book_rounded, 1, unselectedIconColor),
+          _buildNavItem(context, Icons.notifications_rounded, 2, unselectedIconColor),
+          _buildNavItem(context, Icons.person_rounded, 3, unselectedIconColor),
         ],
       ),
     );
   }
 
-  Widget _buildNavItem(BuildContext context, IconData icon, int index) {
+  Widget _buildNavItem(BuildContext context, IconData icon, int index, Color unselectedColor) {
     final isSelected = selectedIndex == index;
     return GestureDetector(
       onTap: () => _onItemTapped(context, index),
@@ -72,8 +83,8 @@ class CustomNavBar extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: isSelected ? const Color(0XFF018592) : Colors.white,
-          size: 28,
+          color: isSelected ? const Color(0XFF018592) : unselectedColor,
+          size: 26,
         ),
       ),
     );

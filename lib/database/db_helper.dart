@@ -6,6 +6,11 @@ class DBHelper {
   static final DBHelper instance = DBHelper();
   static Database? _database;
 
+  // Variabel untuk menyimpan data user yang sedang login
+  static String activeUserName = "User Name";
+  static String activeUserEmail = "email@example.com";
+  static String activeUserFoto = "";
+
   Future<Database> get database async {
     _database ??= await initDB();
     return _database!;
@@ -16,7 +21,7 @@ class DBHelper {
 
     return await openDatabase(
       path,
-      version: 2, 
+      version: 4, 
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE tugas(
@@ -28,10 +33,21 @@ class DBHelper {
             selesai INTEGER
           )
         ''');
+
+        await db.execute('''
+          CREATE TABLE users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nama TEXT,
+            email TEXT,
+            password TEXT,
+            fotoPath TEXT
+          )
+        ''');
       },
 
       onUpgrade: (db, oldVersion, newVersion) async {
         await db.execute("DROP TABLE IF EXISTS tugas");
+        await db.execute("DROP TABLE IF EXISTS users");
 
         await db.execute('''
           CREATE TABLE tugas(
@@ -43,10 +59,84 @@ class DBHelper {
             selesai INTEGER
           )
         ''');
+
+        await db.execute('''
+          CREATE TABLE users(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nama TEXT,
+            email TEXT,
+            password TEXT
+          )
+        ''');
       },
     );
   }
 
+// ==================== OPERASI USER (LOGIN/REGISTER) ====================
+  Future<int> registerUser(String nama, String email, String password) async {
+    final db = await database;
+    return await db.insert('users', {
+      'nama': nama,
+      'email': email,
+      'password': password,
+      'fotoPath': '',
+    });
+  }
+
+  Future<bool> loginUser(String email, String password) async {
+    final db = await database;
+    final result = await db.query(
+      'users',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
+    );
+    
+    if (result.isNotEmpty) {
+      activeUserName = result.first['nama'] as String;
+      activeUserEmail = result.first['email'] as String;
+      return true;
+    }
+    return false;
+  }
+
+// Reset Password
+  Future<bool> resetPassword(String email, String newPassword) async {
+    final db = await database;
+    
+    // Cek apakah email terdaftar di database
+    final cekEmail = await db.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+
+    // Jika email tidak ada, kembalikan nilai false (gagal)
+    if (cekEmail.isEmpty) {
+      return false;
+    }
+
+    // Jika ada, lakukan update password
+    await db.update(
+      'users',
+      {'password': newPassword},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+    return true; // Berhasil
+  }
+
+  // Fungsi baru untuk update foto
+  Future<void> updateFotoProfile(String email, String path) async {
+    final db = await database;
+    await db.update(
+      'users',
+      {'fotoPath': path},
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+  }
+
+// ==================== OPERASI TUGAS ====================
   Future<int> insertTask(Task task) async {
     final db = await database;
 

@@ -49,8 +49,14 @@ class _BerandaState extends State<Beranda> {
 
   @override
   Widget build(BuildContext context) {
+    // --- Logika Warna Adaptif ---
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final secondaryTextColor = isDark ? Colors.white54 : Colors.black54;
+    final itemBgColor = isDark ? const Color(0XFF1E1E22) : Colors.grey.shade200;
+    final borderColor = isDark ? const Color(0XFF018592) : Colors.grey.shade400;
+
     return Scaffold(
-      backgroundColor: const Color(0XFF161618),
       appBar: AppBar(
         title: const Text(
           'TASKUY',
@@ -79,22 +85,20 @@ class _BerandaState extends State<Beranda> {
             firstDay: DateTime.utc(2020, 1, 1),
             lastDay: DateTime.utc(2030, 12, 31),
             focusedDay: _focusedDay,
-            calendarStyle: const CalendarStyle(
-              todayDecoration: BoxDecoration(
+            calendarStyle: CalendarStyle(
+              todayDecoration: const BoxDecoration(
                 color: Color(0XFF018592),
                 shape: BoxShape.circle,
               ),
-              defaultTextStyle: TextStyle(color: Colors.white),
-              weekendTextStyle: TextStyle(color: Colors.white70),
+              defaultTextStyle: TextStyle(color: textColor),
+              weekendTextStyle: TextStyle(color: secondaryTextColor),
             ),
-            headerStyle: const HeaderStyle(
+            headerStyle: HeaderStyle(
               titleCentered: true,
               formatButtonVisible: false,
-              titleTextStyle: TextStyle(color: Colors.white),
-              leftChevronIcon:
-                  Icon(Icons.chevron_left, color: Colors.white),
-              rightChevronIcon:
-                  Icon(Icons.chevron_right, color: Colors.white),
+              titleTextStyle: TextStyle(color: textColor),
+              leftChevronIcon: Icon(Icons.chevron_left, color: textColor),
+              rightChevronIcon: Icon(Icons.chevron_right, color: textColor),
             ),
           ),
 
@@ -119,10 +123,10 @@ class _BerandaState extends State<Beranda> {
 
           Expanded(
             child: _tasksHariIni.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       "Tidak ada tugas hari ini",
-                      style: TextStyle(color: Colors.white54),
+                      style: TextStyle(color: secondaryTextColor),
                     ),
                   )
                 : ListView.builder(
@@ -140,11 +144,9 @@ class _BerandaState extends State<Beranda> {
                           ),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0XFF1E1E22),
+                            color: itemBgColor,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: const Color(0XFF018592),
-                            ),
+                            border: Border.all(color: borderColor),
                           ),
 
                           child: Row(
@@ -155,28 +157,27 @@ class _BerandaState extends State<Beranda> {
                                     : Icons.radio_button_unchecked,
                                 color: task.selesai
                                     ? Colors.green
-                                    : Colors.white54,
+                                    : secondaryTextColor,
                               ),
 
                               const SizedBox(width: 10),
 
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       task.mataKuliah,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      style: TextStyle(
+                                        color: textColor,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
                                       task.jenisTugas,
-                                      style: const TextStyle(
-                                        color: Colors.white54,
+                                      style: TextStyle(
+                                        color: secondaryTextColor,
                                         fontSize: 12,
                                       ),
                                     ),
@@ -186,8 +187,8 @@ class _BerandaState extends State<Beranda> {
 
                               Text(
                                 task.deadlineFormat,
-                                style: const TextStyle(
-                                  color: Colors.white54,
+                                style: TextStyle(
+                                  color: secondaryTextColor,
                                   fontSize: 12,
                                 ),
                               ),
@@ -200,9 +201,7 @@ class _BerandaState extends State<Beranda> {
           ),
         ],
       ),
-
-      bottomNavigationBar:
-          const CustomNavBar(selectedIndex: 0),
+      bottomNavigationBar: const CustomNavBar(selectedIndex: 0),
     );
   }
 }
